@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Todo from './Todo';
-
-type Todo = {
-  id: number;
-  task: string;
-}
 
 function App() {
 

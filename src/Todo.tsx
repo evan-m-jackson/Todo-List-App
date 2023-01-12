@@ -1,43 +1,46 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import CreateList from './CreateList';
 
+export async function GetTodoList() {
+    const response = await fetch('http://127.0.0.1:8000/todo-list/')
+
+    if (!response.ok){
+        throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+        )
+    }
+    const actualData = response.json()
+    return actualData
+}
 
 function Todo() {
-    const [data, setData] = React.useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [data, setData] = useState(Array<any>);
+    const [error, setError] = useState('');
+
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/todo-list/')
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(
-                    `This is an HTTP error: The status is ${response.status}`
-                )
+
+        async function Wrapper() {
+            const actualData = await GetTodoList()
+            console.log(actualData)
+            try {
+                setData(actualData)
+                setError('') 
+            } catch (error) {
+                setError('There is an error!!!!')
             }
-            return response.json()
-        })
-        .then((actualData) => {
-            setData(actualData)
-            setError(null)
-            console.log(data)
-        })
-        .catch((err) => {
-            setError(err.message)
-            setData(null)
-        })
-        .finally(() => {
-            setLoading(false);
-        })
+        }
+        Wrapper()
     }, [])
 
     return (
         <div>
             <h1>ToDo List:</h1>
+            <CreateList list={data}/>
             <form>
                 <input></input>
                 <button>Add</button>
             </form>
-            <p>{}</p>
         </div>
     )
 }
