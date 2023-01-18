@@ -1,45 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import CreateList from './CreateList';
+import DisplayList from './DisplayList';
+import formatList from './formatList';
 
-export async function GetTodoList() {
-    const response = await fetch('http://127.0.0.1:8000/todo-list/')
-
-    if (!response.ok){
-        throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-        )
-    }
-    const actualData = response.json()
-    return actualData
-}
-
-function Todo() {
+function Todo(props: {fetchList: any, addTodo: any}) {
     const [data, setData] = useState(Array<any>);
+    const [todo, setTodo] = useState('');
     const [error, setError] = useState('');
-
 
     useEffect(() => {
 
-        async function Wrapper() {
-            const actualData = await GetTodoList()
-            console.log(actualData)
-            try {
-                setData(actualData)
-                setError('') 
-            } catch (error) {
-                setError('There is an error!!!!')
-            }
+        async function getData() {
+            const taskArr = await props.fetchList()
+            const actualData = formatList(taskArr)
+            setData(actualData)
         }
-        Wrapper()
+        getData()
     }, [])
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTodo(event.target.value)
+    }
+
+    const handleClick = (event: any) => {
+        event.preventDefault()
+        setData([...data, todo])
+        props.addTodo(todo)
+        setTodo('')
+    }
 
     return (
         <div>
             <h1>ToDo List:</h1>
-            <CreateList list={data}/>
+            <DisplayList list={data}/>
             <form>
-                <input></input>
-                <button>Add</button>
+                <input data-testid={'add-task'} onChange={handleChange} value={todo}></input>
+                <button data-testid={'add-button'} onClick={handleClick}>Add</button>
             </form>
         </div>
     )
