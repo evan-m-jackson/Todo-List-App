@@ -5,17 +5,10 @@ import {
   mockAddTodo,
   mockFetchTodoList,
   mockFetchTodoListError,
-  mockServerOn,
 } from "../mocks/mock";
 
 test("Has a submit button", () => {
-  render(
-    <Todo
-      fetchList={mockFetchTodoList}
-      addTodo={mockAddTodo}
-      serverOn={mockServerOn}
-    />
-  );
+  render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
 
   const submitButton = screen.getByTestId("add-button");
 
@@ -23,13 +16,7 @@ test("Has a submit button", () => {
 });
 
 test("Has an h1 header that says Todo List", () => {
-  render(
-    <Todo
-      fetchList={mockFetchTodoList}
-      addTodo={mockAddTodo}
-      serverOn={mockServerOn}
-    />
-  );
+  render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
 
   const header = screen.getByText("ToDo List:");
 
@@ -37,13 +24,7 @@ test("Has an h1 header that says Todo List", () => {
 });
 
 test("Task is added when button is pressed", () => {
-  render(
-    <Todo
-      fetchList={mockFetchTodoList}
-      addTodo={mockAddTodo}
-      serverOn={mockServerOn}
-    />
-  );
+  render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
 
   const input = screen.getByTestId("add-task");
   fireEvent.change(input, { target: { value: "a new task" } });
@@ -55,14 +36,30 @@ test("Task is added when button is pressed", () => {
 });
 
 test("Server is turned off", () => {
-  render(
-    <Todo
-      fetchList={mockFetchTodoListError}
-      addTodo={mockAddTodo}
-      serverOn={mockServerOn}
-    />
-  );
+  render(<Todo fetchList={mockFetchTodoListError} addTodo={mockAddTodo} />);
   const button = screen.getByRole("button");
 
   expect(button).toBeDisabled();
+});
+
+test("Error message pops up when server is turned off", () => {
+  render(<Todo fetchList={mockFetchTodoListError} addTodo={mockAddTodo} />);
+  const error = screen.getByTestId("error-message");
+
+  expect(error).toBeInTheDocument();
+});
+
+test("No error message pops up when server is turned on", () => {
+  render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
+  const error = screen.queryByTestId("error-message");
+
+  expect(error).not.toBeInTheDocument();
+});
+
+test("Error message is red with italics", () => {
+  render(<Todo fetchList={mockFetchTodoListError} addTodo={mockAddTodo} />);
+  const error = screen.queryByTestId("error-message");
+
+  expect(error).toHaveStyle("color: red");
+  expect(error).toHaveStyle("font-style: italic");
 });

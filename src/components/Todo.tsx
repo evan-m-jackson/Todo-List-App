@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import DisplayList from "./DisplayList";
 import formatList from "../formatList";
+import ServerError from "./ServerError";
 import AddButton from "./AddButton";
+import TodoInput from "./TodoInput";
 
-function Todo(props: { fetchList: any; addTodo: any; serverOn: any }) {
+function Todo(props: { fetchList: any; addTodo: any }) {
   const [data, setData] = useState(Array<any>);
   const [todo, setTodo] = useState("");
   const [working, setWorking] = useState(true);
@@ -19,15 +21,6 @@ function Todo(props: { fetchList: any; addTodo: any; serverOn: any }) {
       }
     }
     getData();
-  }, []);
-
-  useEffect(() => {
-    async function checkServer() {
-      const serverOn = await props.serverOn();
-      setWorking(serverOn);
-      console.log(working);
-    }
-    checkServer();
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,18 +39,9 @@ function Todo(props: { fetchList: any; addTodo: any; serverOn: any }) {
       <h1>ToDo List:</h1>
       <DisplayList list={data} />
       <form>
-        <input
-          data-testid={"add-task"}
-          onChange={handleChange}
-          value={todo}
-        ></input>
-        <button
-          data-testid={"add-button"}
-          onClick={handleClick}
-          disabled={!working}
-        >
-          Add
-        </button>
+        <TodoInput onChange={handleChange} value={todo} />
+        <AddButton onClick={handleClick} disabled={!working} />
+        <ServerError working={working} />
       </form>
     </div>
   );
