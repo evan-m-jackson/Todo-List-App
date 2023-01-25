@@ -1,11 +1,13 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Todo from "./Todo";
 import {
   mockAddTodo,
+  mockAddTodoError,
   mockFetchTodoList,
   mockFetchTodoListError,
 } from "../mocks/mock";
+import userEvent from "@testing-library/user-event";
 
 test("Has a submit button", () => {
   render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
@@ -23,23 +25,18 @@ test("Has an h1 header that says Todo List", () => {
   expect(header).toBeInTheDocument();
 });
 
-test("Task is added when button is pressed", () => {
+test("Task is added when button is pressed", async () => {
   render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodo} />);
 
   const input = screen.getByTestId("add-task");
   fireEvent.change(input, { target: { value: "a new task" } });
   const button = screen.getByRole("button");
-  fireEvent.click(button);
-  const li = screen.getByText("a new task");
+  userEvent.click(button);
 
-  expect(li).toBeInTheDocument();
-});
-
-test("Server is turned off", () => {
-  render(<Todo fetchList={mockFetchTodoListError} addTodo={mockAddTodo} />);
-  const button = screen.getByRole("button");
-
-  expect(button).toBeDisabled();
+  await waitFor(() => {
+    const li = screen.getByText("a new task");
+    expect(li).toBeInTheDocument();
+  });
 });
 
 test("Error message pops up when server is turned off", () => {
@@ -58,8 +55,20 @@ test("No error message pops up when server is turned on", () => {
 
 test("Error message is red with italics", () => {
   render(<Todo fetchList={mockFetchTodoListError} addTodo={mockAddTodo} />);
-  const error = screen.queryByTestId("error-message");
+  const error = screen.getByTestId("error-message");
 
   expect(error).toHaveStyle("color: red");
   expect(error).toHaveStyle("font-style: italic");
+});
+
+test("Error message when todo added when server is turned off", () => {
+  render(<Todo fetchList={mockFetchTodoList} addTodo={mockAddTodoError} />);
+
+  const input = screen.getByTestId("add-task");
+  fireEvent.change(input, { target: { value: "a new task" } });
+  const button = screen.getByRole("button");
+  userEvent.click(button);
+  const error = screen.getByTestId("error-message");
+
+  expect(error).toBeInTheDocument();
 });

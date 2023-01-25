@@ -27,10 +27,24 @@ function Todo(props: { fetchList: any; addTodo: any }) {
     setTodo(event.target.value);
   };
 
-  const handleClick = (event: any) => {
+  const [newdata, setNewdata] = useState(null);
+
+  useEffect(() => {
+    if (newdata) {
+      setData([...data, newdata]);
+      setNewdata(null);
+    }
+  }, [newdata]);
+
+  const handleClick = async (event: any) => {
     event.preventDefault();
-    props.addTodo(todo);
-    setData([...data, todo]);
+    try {
+      const response = await props.addTodo(todo);
+      setNewdata(response["task"]);
+      setWorking(true);
+    } catch {
+      setWorking(false);
+    }
     setTodo("");
   };
 
@@ -40,7 +54,7 @@ function Todo(props: { fetchList: any; addTodo: any }) {
       <DisplayList list={data} />
       <form>
         <TodoInput onChange={handleChange} value={todo} />
-        <AddButton onClick={handleClick} disabled={!working} />
+        <AddButton onClick={handleClick} />
         <ServerError working={working} />
       </form>
     </div>

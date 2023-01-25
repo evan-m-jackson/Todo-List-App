@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function DisplayList(props: { list: Array<any> }) {
+export default function DisplayList(props: { list: Array<string> }) {
   return (
     <ul>
       {props.list.length > 0 ? (
