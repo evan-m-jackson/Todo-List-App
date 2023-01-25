@@ -8,10 +8,11 @@ export function mockFetchTodoListError() {
   throw "Error";
 }
 
-export function mockServerOn() {
-  return true;
+export function mockAddTodoError(todo: any) {
+  throw "Error";
 }
 
 export function mockAddTodo(todo: any) {
   list.push({ task: todo });
+  return { task: todo };
 }
