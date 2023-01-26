@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Todo from './Todo';
-
-type Todo = {
-  id: number;
-  task: string;
-}
+import React from "react";
+import "./App.css";
+import Todo from "./components/Todo";
+import { addTodo, fetchTodoList } from "./api/server";
 
 function App() {
-
   return (
     <div>
-      <Todo></Todo>
+      <Todo fetchList={fetchTodoList} addTodo={addTodo}></Todo>
     </div>
   );
 }
