@@ -13,6 +13,13 @@ export function mockAddTodoError(todo: any) {
 }
 
 export function mockAddTodo(todo: any) {
-  list.push({ task: todo });
-  return { task: todo };
+  return { id: 1, task: todo };
+}
+
+export function mockDeleteTodo(id: string) {
+  return true;
+}
+
+export function mockDeleteTodoError(id: string) {
+  throw "Error";
 }

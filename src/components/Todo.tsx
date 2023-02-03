@@ -4,8 +4,24 @@ import formatList from "../formatList";
 import ServerError from "./ServerError";
 import AddButton from "./AddButton";
 import TodoInput from "./TodoInput";
+import { deleteTodo } from "../api/server";
 
-function Todo(props: { fetchList: any; addTodo: any }) {
+interface ITodoRequiredProps {
+  fetchList: any;
+  addTodo: any;
+}
+
+interface ITodoOptionalProps {
+  deleteTodo: any;
+}
+
+interface ITodoProps extends ITodoRequiredProps, ITodoOptionalProps {}
+
+const defaultProps: ITodoOptionalProps = {
+  deleteTodo: true,
+};
+
+function Todo(props: ITodoProps) {
   const [data, setData] = useState(Array<any>);
   const [todo, setTodo] = useState("");
   const [working, setWorking] = useState(true);
@@ -14,8 +30,7 @@ function Todo(props: { fetchList: any; addTodo: any }) {
     async function getData() {
       try {
         const taskArr = await props.fetchList();
-        const actualData = formatList(taskArr);
-        setData(actualData);
+        setData(taskArr);
       } catch {
         setWorking(false);
       }
@@ -40,7 +55,7 @@ function Todo(props: { fetchList: any; addTodo: any }) {
     event.preventDefault();
     try {
       const response = await props.addTodo(todo);
-      setNewdata(response["task"]);
+      setNewdata(response);
       setWorking(true);
     } catch {
       setWorking(false);
@@ -48,10 +63,31 @@ function Todo(props: { fetchList: any; addTodo: any }) {
     setTodo("");
   };
 
+  const [del, setDel] = useState(false);
+  const [id, setId] = useState(0);
+  const deleteItem = async (event: any) => {
+    const buttonId = event.currentTarget.getAttribute("data-testid");
+    setId(buttonId);
+    const canDelete = await deleteTodo(buttonId);
+    setDel(canDelete);
+    // if (del) {
+    //   console.log(data[0]["id"] == buttonId);
+    //   const newDataList = data.filter((item) => item["id"] != buttonId);
+    //   setData(newDataList);
+    //   console.log(data);
+    // }
+  };
+
+  useEffect(() => {
+    const newDataList = data.filter((item) => item["id"] != id);
+    setData(newDataList);
+    setDel(false);
+  }, [del]);
+
   return (
     <div>
       <h1>ToDo List:</h1>
-      <DisplayList list={data} />
+      <DisplayList list={data} onClick={deleteItem} />
       <form>
         <TodoInput onChange={handleChange} value={todo} />
         <AddButton onClick={handleClick} />
@@ -60,5 +96,7 @@ function Todo(props: { fetchList: any; addTodo: any }) {
     </div>
   );
 }
+
+Todo.defaultProps = defaultProps;
 
 export default Todo;
