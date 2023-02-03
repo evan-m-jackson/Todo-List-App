@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 
+const BASE_URL = process.env.REACT_APP_APIURL;
 enum Url {
-  GetList = "http://127.0.0.1:8000/full-todo-list",
-  AddTodo = "http://127.0.0.1:8000/full-todo",
-  DeleteTodo = "http://127.0.0.1:8000/todo-delete/",
+  GetList = `full-todo-list`,
+  AddTodo = "full-todo",
+  DeleteTodo = "todo-delete/",
 }
 
 export async function fetchTodoList() {
-  const response = await fetch(Url.GetList);
+  const response = await fetch(BASE_URL + Url.GetList);
   const actualData = response.json();
   return actualData;
 }
 
 export async function addTodo(todo: any) {
-  const response = await fetch(Url.AddTodo, {
+  const response = await fetch(BASE_URL + Url.AddTodo, {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -25,7 +26,7 @@ export async function addTodo(todo: any) {
 }
 
 export async function deleteTodo(id: any) {
-  const response = await fetch(Url.DeleteTodo + id, {
+  const response = await fetch(BASE_URL + Url.DeleteTodo + id, {
     method: "DELETE",
   });
   const responseOk = response.ok;
