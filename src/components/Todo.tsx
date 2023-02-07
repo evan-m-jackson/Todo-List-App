@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
 import DisplayList from "./DisplayList";
-import formatList from "../formatList";
 import ServerError from "./ServerError";
 import AddButton from "./AddButton";
 import TodoInput from "./TodoInput";
-import { deleteTodo } from "../api/server";
 
 interface ITodoRequiredProps {
   fetchList: any;
   addTodo: any;
-}
-
-interface ITodoOptionalProps {
   deleteTodo: any;
 }
 
-interface ITodoProps extends ITodoRequiredProps, ITodoOptionalProps {}
-
-const defaultProps: ITodoOptionalProps = {
-  deleteTodo: true,
-};
+interface ITodoProps extends ITodoRequiredProps {}
 
 function Todo(props: ITodoProps) {
   const [data, setData] = useState(Array<any>);
@@ -68,14 +59,14 @@ function Todo(props: ITodoProps) {
   const deleteItem = async (event: any) => {
     const buttonId = event.currentTarget.getAttribute("data-testid");
     setId(buttonId);
-    const canDelete = await deleteTodo(buttonId);
-    setDel(canDelete);
-    // if (del) {
-    //   console.log(data[0]["id"] == buttonId);
-    //   const newDataList = data.filter((item) => item["id"] != buttonId);
-    //   setData(newDataList);
-    //   console.log(data);
-    // }
+    try {
+      const canDelete = await props.deleteTodo(buttonId);
+      setDel(canDelete);
+      setWorking(true);
+    } catch {
+      setDel(false);
+      setWorking(false);
+    }
   };
 
   useEffect(() => {
@@ -96,7 +87,5 @@ function Todo(props: ITodoProps) {
     </div>
   );
 }
-
-Todo.defaultProps = defaultProps;
 
 export default Todo;

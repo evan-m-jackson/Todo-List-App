@@ -1,20 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface IDisplayListRequiredProps {
   list: Array<any>;
-}
-
-interface IDisplayListOptionalProps {
   onClick: any;
 }
 
-interface IDisplayListProps
-  extends IDisplayListRequiredProps,
-    IDisplayListOptionalProps {}
-
-const defaultProps: IDisplayListOptionalProps = {
-  onClick: null,
-};
+interface IDisplayListProps extends IDisplayListRequiredProps {}
 
 export default function DisplayList(props: IDisplayListProps) {
   return (
@@ -38,5 +29,3 @@ export default function DisplayList(props: IDisplayListProps) {
 function DisplayIfEmptyList() {
   return <li key={"empty"}>Nothing on List</li>;
 }
-
-DisplayList.defaultProps = defaultProps;

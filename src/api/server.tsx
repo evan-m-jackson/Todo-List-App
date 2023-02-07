@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const BASE_URL = process.env.REACT_APP_APIURL;
+const BASE_URL = process.env.REACT_APP_API_URL;
 enum Url {
   GetList = `full-todo-list`,
   AddTodo = "full-todo",
@@ -9,8 +9,7 @@ enum Url {
 
 export async function fetchTodoList() {
   const response = await fetch(BASE_URL + Url.GetList);
-  const actualData = response.json();
-  return actualData;
+  return response.json();
 }
 
 export async function addTodo(todo: any) {
@@ -21,14 +20,12 @@ export async function addTodo(todo: any) {
     },
     body: JSON.stringify({ task: todo }),
   });
-  const actualData = response.json();
-  return actualData;
+  return response.json();
 }
 
 export async function deleteTodo(id: any) {
   const response = await fetch(BASE_URL + Url.DeleteTodo + id, {
     method: "DELETE",
   });
-  const responseOk = response.ok;
-  return responseOk;
+  return response.ok;
 }
