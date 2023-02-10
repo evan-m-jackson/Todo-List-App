@@ -4,10 +4,12 @@ import Todo from "./Todo";
 import {
   mockAddTodo,
   mockAddTodoError,
+  mockAddTodoSecond,
   mockDeleteTodo,
   mockDeleteTodoError,
   mockFetchTodoList,
   mockFetchTodoListError,
+  mockFetchTodoListWith,
 } from "../mocks/mock";
 import userEvent from "@testing-library/user-event";
 
@@ -19,7 +21,6 @@ test("Has a submit button", () => {
       deleteTodo={mockDeleteTodo}
     />
   );
-
   const submitButton = screen.getByTestId("add-button");
 
   expect(submitButton).toBeInTheDocument();
@@ -139,7 +140,7 @@ test("Add a todo and then delete it", async () => {
     expect(li).toBeInTheDocument();
   });
 
-  const deleteButton = screen.getByTestId("1");
+  const deleteButton = screen.getByTestId("delete-1");
   userEvent.click(deleteButton);
 
   await waitFor(async () => {
@@ -167,7 +168,7 @@ test("Todo is not deleted if server is off", async () => {
     expect(li).toBeInTheDocument();
   });
 
-  const deleteButton = screen.getByTestId("1");
+  const deleteButton = screen.getByTestId("delete-1");
   userEvent.click(deleteButton);
 
   await waitFor(async () => {
@@ -195,11 +196,71 @@ test("Error message pops up if delete is attempted and server is off", async () 
     expect(li).toBeInTheDocument();
   });
 
-  const deleteButton = screen.getByTestId("1");
+  const deleteButton = screen.getByTestId("delete-1");
   userEvent.click(deleteButton);
 
   await waitFor(async () => {
     const error = screen.getByTestId("error-message");
     expect(error).toBeInTheDocument();
   });
+});
+
+test("Add a todo, click edit button and then cancel the update", async () => {
+  render(
+    <Todo
+      fetchList={mockFetchTodoList}
+      addTodo={mockAddTodo}
+      deleteTodo={mockDeleteTodo}
+    />
+  );
+
+  const input = screen.getByTestId("add-task");
+  fireEvent.change(input, { target: { value: "a new task" } });
+  const button = screen.getByTestId("add-button");
+  userEvent.click(button);
+
+  await waitFor(async () => {
+    const li = screen.getByText("a new task");
+    expect(li).toBeInTheDocument();
+  });
+
+  const editButton = screen.getByTestId("edit-1");
+  userEvent.click(editButton);
+
+  const cancel = screen.getByTestId("cancel-1");
+  userEvent.click(cancel);
+
+  await waitFor(async () => {
+    const task = screen.queryByTestId("update-textbox-1");
+    expect(task).not.toBeInTheDocument();
+  });
+});
+
+test("Add 2 todos, click edit button for first and then try to delete the second", async () => {
+  render(
+    <Todo
+      fetchList={mockFetchTodoListWith}
+      addTodo={mockAddTodoSecond}
+      deleteTodo={mockDeleteTodo}
+    />
+  );
+
+  const input = screen.getByTestId("add-task");
+  fireEvent.change(input, { target: { value: "a new task" } });
+  const button = screen.getByTestId("add-button");
+  userEvent.click(button);
+
+  await waitFor(async () => {
+    const li = screen.getByText("a new task");
+    expect(li).toBeInTheDocument();
+  });
+
+  const editButton = screen.getByTestId("edit-1");
+  userEvent.click(editButton);
+
+  const deleteButton = screen.getByTestId("delete-2");
+  userEvent.click(deleteButton);
+
+  const confirmButton = screen.getByTestId("confirm-1");
+  expect(confirmButton).toBeInTheDocument();
 });

@@ -13,6 +13,7 @@ export function mockAddTodoError(todo: any) {
 }
 
 export function mockAddTodo(todo: any) {
+  let id = 1;
   return { id: 1, task: todo };
 }
 
@@ -22,4 +23,12 @@ export function mockDeleteTodo(id: string) {
 
 export function mockDeleteTodoError(id: string) {
   throw "Error";
+}
+
+export function mockFetchTodoListWith() {
+  return Array<any>({ id: 1, task: "first task" });
+}
+
+export function mockAddTodoSecond(todo: any) {
+  return { id: 2, task: todo };
 }

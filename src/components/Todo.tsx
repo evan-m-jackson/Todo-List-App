@@ -3,6 +3,7 @@ import DisplayList from "./DisplayList";
 import ServerError from "./ServerError";
 import AddButton from "./AddButton";
 import TodoInput from "./TodoInput";
+import { screen } from "@testing-library/react";
 
 interface ITodoRequiredProps {
   fetchList: any;
@@ -57,15 +58,20 @@ function Todo(props: ITodoProps) {
   const [del, setDel] = useState(false);
   const [id, setId] = useState(0);
   const deleteItem = async (event: any) => {
-    const buttonId = event.currentTarget.getAttribute("data-testid");
-    setId(buttonId);
-    try {
-      const canDelete = await props.deleteTodo(buttonId);
-      setDel(canDelete);
-      setWorking(true);
-    } catch {
-      setDel(false);
-      setWorking(false);
+    const deleteId = event.currentTarget.getAttribute("data-testid");
+    const buttonId = deleteId.split("-")[1];
+    if (updateId == 0) {
+      setId(buttonId);
+      try {
+        const canDelete = await props.deleteTodo(buttonId);
+        setDel(canDelete);
+        setWorking(true);
+      } catch {
+        setDel(false);
+        setWorking(false);
+      }
+    } else if (updateId == buttonId) {
+      setUpdateId(0);
     }
   };
 
@@ -75,10 +81,22 @@ function Todo(props: ITodoProps) {
     setDel(false);
   }, [del]);
 
+  const [updateId, setUpdateId] = useState(0);
+  function updateItem(id: number) {
+    setUpdateId(id);
+  }
+
+  useEffect(() => {});
+
   return (
     <div>
-      <h1>ToDo List:</h1>
-      <DisplayList list={data} onClick={deleteItem} />
+      <h1 data-testid={"header"}>ToDo List:</h1>
+      <DisplayList
+        list={data}
+        onClickDelete={deleteItem}
+        onClickUpdate={updateItem}
+        idToUpdate={updateId}
+      />
       <form>
         <TodoInput onChange={handleChange} value={todo} />
         <AddButton onClick={handleClick} />

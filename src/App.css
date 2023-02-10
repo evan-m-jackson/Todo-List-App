@@ -1,0 +1,17 @@
+ul {
+    display: table;
+}
+li {
+    display: table-row;
+}
+span {
+    display: table-cell;
+}
+.left {
+    text-align: left;
+    padding-right: 1.5rem;
+}
+
+.right {
+    text-align: right;
+}
